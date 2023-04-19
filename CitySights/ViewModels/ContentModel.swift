@@ -13,6 +13,7 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     @Published var restaurants = [Business]()
     @Published var sights = [Business]()
+    @Published var authorizationState = CLAuthorizationStatus.notDetermined
     
     override init() {
         super.init()
@@ -25,6 +26,8 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     // MARK: - Location manager delegate methods
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        self.authorizationState = locationManager.authorizationStatus
+        
         if locationManager.authorizationStatus == .authorizedAlways ||
             locationManager.authorizationStatus == .authorizedWhenInUse {
             locationManager.startUpdatingLocation()
@@ -66,12 +69,22 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                     do {
                         let result = try JSONDecoder().decode(BusinessSearch.self, from: data!)
                         
+                        var business = result.businesses
+                        
+                        business.sort { (b1, b2) -> Bool in
+                            return b1.distance ?? 0 < b2.distance ?? 0
+                        }
+                        
+                        for b in business {
+                            b.getImageData()
+                        }
+                        
                         DispatchQueue.main.async {
                             switch category {
                             case Constants.sightsKey:
-                                self.sights = result.businesses
+                                self.sights = business
                             case Constants.restaurantsKey:
-                                self.restaurants = result.businesses
+                                self.restaurants = business
                             default:
                                 break
                             }
