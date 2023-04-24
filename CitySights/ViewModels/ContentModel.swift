@@ -17,11 +17,11 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     override init() {
         super.init()
-        
         locationManager.delegate = self
+    }
+    
+    func requestGeolocationPermission() {
         locationManager.requestWhenInUseAuthorization()
-        
-        //        locationManager.startUpdatingLocation()
     }
     
     // MARK: - Location manager delegate methods

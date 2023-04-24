@@ -8,8 +8,47 @@
 import SwiftUI
 
 struct DeniedView: View {
+    let backgroundColor = Color(red: 34/255, green: 141/255, blue: 138/255)
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Spacer()
+            
+            Text("Whoops!")
+                .font(.title)
+            
+            Text("Grant location permission to use the App!")
+            
+            Spacer()
+            
+            Button {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                
+            } label: {
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(.white)
+                        .frame(height: 48)
+                        .cornerRadius(10)
+                    
+                    Text("Go to Settings")
+                        .bold()
+                        .foregroundColor(backgroundColor)
+                }
+            }
+            .padding()
+            
+            Spacer()
+        }
+        .padding()
+        .foregroundColor(.white)
+        .multilineTextAlignment(.center)
+        .background(backgroundColor)
+        .ignoresSafeArea()
     }
 }
 
